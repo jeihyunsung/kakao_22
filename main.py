@@ -1,11 +1,21 @@
+import argparse
 from API import *
 from match_engine import *
 from evaluate_engine import *
 
+# 토큰 앞 6자리 52bb8d 141등?
+# Maximum score
+# Scenario 1
+# 77.778	62.577	95.38	244.73
+# Scenario 2
+# 52.2032	58.1978	99.7876	212.3113
+# 451.19
+
+
 class MAIN():
     def __init__(self, scenario=1):
         self.api = API()
-        self.match = MATCH(self.api)
+        self.match = MATCH(self.api, scenario)
         self.evaluate = EVALUATE(self.api, scenario)
         self.api.start(scenario)
 
@@ -19,7 +29,7 @@ class MAIN():
             if finished:
                 break
             elif idx%50 == 0:
-                print(self.evaluate.userinfo)
+                print(max(self.evaluate.userinfo.values()))
                 print(idx)
             idx += 1
 
@@ -32,7 +42,10 @@ class MAIN():
             self.userinfo[x['id']] = x['grade']
 
 if __name__=="__main__":
-    main = MAIN()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('scenario', type=int, default=1)
+    args = parser.parse_args()
+    main = MAIN(args.scenario)
     main.simulate()
 
 

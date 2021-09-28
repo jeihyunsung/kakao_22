@@ -1,8 +1,8 @@
 class MATCH():
-    def __init__(self, api):
+    def __init__(self, api, scenario):
         self.api = api
-        self.critical_gap = 50 # Parameter
-        self.critical_time = 7 # Parameter
+        self.critical_gap = 500 if scenario == 1 else 750 # Parameter
+        self.critical_time = 4 # Parameter
         self.curr_turn = 0
 
     def match_turn(self, userinfo):
@@ -30,12 +30,13 @@ class MATCH():
             a = x
             b = self.waiting_list[idx+1]
 
-            if a[2] > self.critical_time:
-                time_critical = True
-            else:
-                time_critical = False
+            grade_gap = abs(a[1]-b[1])
+            time_wait_avg = (a[2]+1+b[2]+1)/2
 
-            if (abs(a[1]-b[1]) > self.critical_gap or next_continue) and not time_critical:
+            critical_ratio = grade_gap/self.critical_gap
+            time_critical = True if time_wait_avg >= self.critical_time else False
+
+            if (critical_ratio > 1 or next_continue == True) and time_critical == False:
                 next_continue = False
                 continue
             else:
